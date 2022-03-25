@@ -15,6 +15,8 @@ class IpController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // GET
+    // http://localhost:8000/api/ip-address
     public function index()
     {
         $result = IpAddress::all();
@@ -37,6 +39,8 @@ class IpController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    // POST
+    // http://localhost:8000/api/ip-address
     public function store(Request $request)
     {
         $input = $request->all();
@@ -52,6 +56,13 @@ class IpController extends Controller
                 'errors' => $validator->errors(),
                 'message' => 'Validation Error',
             ], 422);      
+        }
+
+        if(!filter_var($request->ip_add, FILTER_VALIDATE_IP)){
+            return response()->json([
+                'success' => FALSE,
+                'message' => 'Not Valid IP',
+            ], 422);
         }
 
         $record = IpAddress::where(['ip_add' => $request->ip_add])->first();
@@ -78,20 +89,25 @@ class IpController extends Controller
      * @param  \App\Models\IpAddress  $ipAddress
      * @return \Illuminate\Http\Response
      */
-    public function show(IpAddress $ipAddress)
+    // GET
+    // http://localhost:8000/api/ip-address/1
+    public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\IpAddress  $ipAddress
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(IpAddress $ipAddress)
-    {
-        //
+        $record = IpAddress::find($id);
+    
+        if (is_null($record)) {
+            return response()->json([
+                'success' => FALSE,
+                'message' => 'Not found.',
+            ], 404);
+        }
+     
+        return response()->json([
+            'success' => true,
+            'data' => new IpResource($record),
+            'message' => 'Retrieved successfully',
+        ], 200);
+    
     }
 
     /**
@@ -101,9 +117,30 @@ class IpController extends Controller
      * @param  \App\Models\IpAddress  $ipAddress
      * @return \Illuminate\Http\Response
      */
+    // PUT
+    // http://localhost:8000/api/ip-address/1?label=This is a test
     public function update(Request $request, IpAddress $ipAddress)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'label' => 'required'
+        ]);
+     
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+                'message' => 'Validation Error',
+            ], 422); 
+        }
+     
+        $ipAddress->label = $input['label'];
+        $ipAddress->save();
+        return response()->json([
+            'success' => true,
+            'data' => new IpResource($ipAddress),
+            'message' => 'Updated successfully',
+        ], 200);
     }
 
     /**
@@ -114,6 +151,9 @@ class IpController extends Controller
      */
     public function destroy(IpAddress $ipAddress)
     {
-        //
+        return response()->json([
+            'success' => true,
+            'message' => 'Not Allowed',
+        ], 200);
     }
 }
