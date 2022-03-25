@@ -1,5 +1,7 @@
 <?php
-
+use App\Http\Controllers\Api\IpController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('user', [AuthController::class, 'user']);
+    Route::apiResource('ip-address',IpController::class);
+    Route::apiResource('users',UserController::class);
 });
