@@ -14,6 +14,7 @@
 - php artisan migrate
 - php artisan passport:install
 - php artisan passport:keys --force
+- php artisan key:generate
 - php artisan serve
 
 ## How to use api
