@@ -5,6 +5,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreIpRequest;
 use App\Http\Resources\IpResource;
 use App\Models\IpAddress;
+use App\Models\IpAddressHistory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -43,6 +45,8 @@ class IpController extends Controller
     // http://localhost:8000/api/ip-address
     public function store(Request $request)
     {
+        $user = Auth::user();
+
         $input = $request->all();
      
         $validator = Validator::make($input, [
@@ -76,6 +80,13 @@ class IpController extends Controller
      
         $ip_add = IpAddress::create($input);
 
+
+        IpAddressHistory::create([
+            'history' => 'Added new ip address',
+            'ip_address_id' => $ip_add->id,
+            'user_id' => $user->id
+        ]);
+
         return response()->json([
             'success' => true,
             'data' => new IpResource($ip_add),
@@ -93,18 +104,26 @@ class IpController extends Controller
     // http://localhost:8000/api/ip-address/1
     public function show($id)
     {
-        $record = IpAddress::find($id);
+        $ip_add = IpAddress::find($id);
+        // print_r($ip_add->histories);exit;
     
-        if (is_null($record)) {
+        if (is_null($ip_add)) {
             return response()->json([
                 'success' => FALSE,
                 'message' => 'Not found.',
             ], 404);
         }
-     
+
+        $user = Auth::user();
+        IpAddressHistory::create([
+            'history' => 'Viewed record',
+            'ip_address_id' => $ip_add->id,
+            'user_id' => $user->id
+        ]);
+        
         return response()->json([
             'success' => true,
-            'data' => new IpResource($record),
+            'data' => new IpResource($ip_add),
             'message' => 'Retrieved successfully',
         ], 200);
     
@@ -133,9 +152,20 @@ class IpController extends Controller
                 'message' => 'Validation Error',
             ], 422); 
         }
-     
+
+        $old_label = $ipAddress->label;
+        $new_label = $input['label'];
+
         $ipAddress->label = $input['label'];
         $ipAddress->save();
+
+        $user = Auth::user();
+        IpAddressHistory::create([
+            'history' => "Changed label from {$old_label} to {$new_label}",
+            'ip_address_id' => $ipAddress->id,
+            'user_id' => $user->id
+        ]);
+
         return response()->json([
             'success' => true,
             'data' => new IpResource($ipAddress),

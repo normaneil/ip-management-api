@@ -14,6 +14,24 @@ class IpResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        
+        // return parent::toArray($request);
+        $histories = [];
+        foreach ($this->histories as $history) {
+            $histories[] = array(
+                "history" => $history->history,
+                "id" => $history->id,
+                "created_at" => date('Y-m-d H:i:s', strtotime($history->created_at)),
+                "user" => $history->user->name,
+            );
+        }
+
+        return [
+            "id"=> $this->id,
+            "ip_add"=> $this->ip_add,
+            "label"=> $this->label,
+            "created_at"=> date('Y-m-d H:i:s', strtotime($this->created_at)),
+            "histories"=> $histories
+        ];
     }
 }
