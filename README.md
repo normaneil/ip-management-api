@@ -2,22 +2,25 @@
 
 ## Prerequisites
 
-- PHP
-- Composer
-- Laravel
-- MySQL
+-   PHP
+-   Composer
+-   Laravel
+-   MySQL
 
 ## Instructions
-- Copy .env.example and rename it to .env
-- Change the value of database connection
-- composer install
-- php artisan migrate
-- php artisan passport:install
-- php artisan passport:keys --force
-- php artisan key:generate
-- php artisan serve
+
+-   Setup mysql database
+-   Copy .env.example and rename it to .env
+-   Change the value of database connection. (DB_DATABASE, DB_USERNAME, DB_PASSWORD)
+-   composer install
+-   php artisan migrate
+-   php artisan passport:install
+-   php artisan passport:keys --force
+-   php artisan key:generate
+-   php artisan serve
 
 ## How to use api
+
 Register a user
 
 ```
@@ -25,13 +28,16 @@ POST http://localhost:8000/api/register
 ```
 
 Login user
-- Token generated after successful login
-- Token can be used in creating, updating ip address
+
+-   Token generated after successful login
+-   Token can be used in creating, updating ip address
+
 ```
 POST http://localhost:8000/api/login
 ```
 
 Add ip address
+
 ```
 POST http://localhost:8000/api/ip-address
 
@@ -49,6 +55,7 @@ Headers:
 ```
 
 Fetch all ip address
+
 ```
 GET http://localhost:8000/api/ip-address
 
@@ -60,6 +67,7 @@ Headers:
 ```
 
 Fetch single ip address
+
 ```
 GET http://localhost:8000/api/ip-address/1
 
@@ -70,8 +78,8 @@ Headers:
 }
 ```
 
-
 Update ip address
+
 ```
 PUT http://localhost:8000/api/ip-address/1?label=Testing
 
@@ -81,5 +89,3 @@ Headers:
     "Accept": "application/json"
 }
 ```
-
-
